@@ -225,72 +225,78 @@ UICorner_6.CornerRadius = UDim.new(0, 20)
 
 -- Scripts
 
-local function XMEQTKG_fake_script() -- Aimbot.LocalScript 
+local function QAMJD_fake_script() -- Aimbot.LocalScript 
 	local script = Instance.new('LocalScript', Aimbot)
 
-	local player = game.Players.LocalPlayer
-	local mouse = player:GetMouse()
-	local Aim = script.Parent
-	local targetPart = nil
-	local maxDistance = 50
-	local aiming = false
+	local Players = game:GetService("Players")
+	local UserInputService = game:GetService("UserInputService")
+	local RunService = game:GetService("RunService")
 	
-	local function getClosestTarget()
-		local closestTarget = nil
-		local shortestDistance = maxDistance
+	local LocalPlayer = Players.LocalPlayer
+	local Camera = workspace.CurrentCamera
 	
-		for _, target in pairs(workspace:GetDescendants()) do
-			if target:IsA("Model") and target:FindFirstChild("Humanoid") then
-				local head = target:FindFirstChild("Head")
-				if head then
-					local distance = (head.Position - mouse.Hit.p).Magnitude
+	local AimbotEnabled = false
+	local AimbotButton = script.Parent -- This should be a button inside a ScreenGui
+	local HoldingRightClick = false -- Track right mouse button hold
+	
+	local function GetClosestPlayer()
+		local closestPlayer = nil
+		local shortestDistance = math.huge
+	
+		for _, player in ipairs(Players:GetPlayers()) do
+			if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("Head") then
+				local headPosition, onScreen = Camera:WorldToViewportPoint(player.Character.Head.Position)
+				if onScreen then
+					local mouseLocation = UserInputService:GetMouseLocation()
+					local distance = (Vector2.new(headPosition.X, headPosition.Y) - mouseLocation).Magnitude
 					if distance < shortestDistance then
-						closestTarget = target
 						shortestDistance = distance
+						closestPlayer = player
 					end
 				end
 			end
 		end
 	
-		return closestTarget
+		return closestPlayer
 	end
 	
-	Aim.MouseButton1Click:Connect(function()
-		aiming = not aiming
-		if aiming then
-			print("Aiming activated")
-		else
-			print("Aiming deactivated")
-			targetPart = nil
-		end
-	end)
-	
-	game:GetService("RunService").RenderStepped:Connect(function()
-		if aiming then
-			if mouse:IsButtonPressed(Enum.UserInputType.MouseButton1) then
-				local closestTarget = getClosestTarget()
-	
-				if closestTarget then
-					targetPart = closestTarget:FindFirstChild("Head")
-					print("Aiming at Head of: " .. closestTarget.Name)
-				else
-					targetPart = nil
-					print("No target in range")
+	local function AimbotLoop()
+		RunService.RenderStepped:Connect(function()
+			if AimbotEnabled and HoldingRightClick then
+				local target = GetClosestPlayer()
+				if target and target.Character and target.Character:FindFirstChild("Head") then
+					Camera.CFrame = CFrame.new(Camera.CFrame.Position, target.Character.Head.Position)
 				end
-			else
-				targetPart = nil
 			end
+		end)
+	end
+	
+	-- Toggle aimbot when button is clicked
+	AimbotButton.MouseButton1Click:Connect(function()
+		AimbotEnabled = not AimbotEnabled
+		AimbotButton.Text = AimbotEnabled and "Aimbot: ON" or "Aimbot: OFF"
+	end)
+	
+	-- Detect right mouse button press
+	UserInputService.InputBegan:Connect(function(input, gameProcessed)
+		if input.UserInputType == Enum.UserInputType.MouseButton2 and not gameProcessed then
+			HoldingRightClick = true
 		end
 	end)
 	
-	game:GetService("RunService").RenderStepped:Connect(function()
-		if targetPart then
+	-- Detect right mouse button release
+	UserInputService.InputEnded:Connect(function(input, gameProcessed)
+		if input.UserInputType == Enum.UserInputType.MouseButton2 then
+			HoldingRightClick = false
 		end
 	end)
+	
+	-- Start the aimbot loop
+	AimbotLoop()
 	
 end
-coroutine.wrap(XMEQTKG_fake_script)()
-local function AKBJSMR_fake_script() -- Highlight.LocalScript 
+coroutine.wrap(QAMJD_fake_script)()
+local function GUVXNZR_fake_script() -- Highlight.LocalScript 
 	local script = Instance.new('LocalScript', Highlight)
 
 	local highlightOn = false
@@ -344,8 +350,8 @@ local function AKBJSMR_fake_script() -- Highlight.LocalScript
 		end
 	end)
 end
-coroutine.wrap(AKBJSMR_fake_script)()
-local function RICJXEU_fake_script() -- WalkSpeed.WalkSpeed 
+coroutine.wrap(GUVXNZR_fake_script)()
+local function GSDK_fake_script() -- WalkSpeed.WalkSpeed 
 	local script = Instance.new('LocalScript', WalkSpeed)
 
 	local Speed = script.Parent
@@ -367,8 +373,8 @@ local function RICJXEU_fake_script() -- WalkSpeed.WalkSpeed
 	end)
 	
 end
-coroutine.wrap(RICJXEU_fake_script)()
-local function DTYOO_fake_script() -- Next.LocalScript 
+coroutine.wrap(GSDK_fake_script)()
+local function TEODGQ_fake_script() -- Next.LocalScript 
 	local script = Instance.new('LocalScript', Next)
 
 	local Players = game:GetService("Players")
@@ -446,8 +452,8 @@ local function DTYOO_fake_script() -- Next.LocalScript
 		game:GetService("RunService").Heartbeat:Connect(updateFly)
 	end)
 end
-coroutine.wrap(DTYOO_fake_script)()
-local function RIAWBDN_fake_script() -- Back.LocalScript 
+coroutine.wrap(TEODGQ_fake_script)()
+local function VHVKRGY_fake_script() -- Back.LocalScript 
 	local script = Instance.new('LocalScript', Back)
 
 	local Players = game:GetService("Players")
@@ -525,8 +531,8 @@ local function RIAWBDN_fake_script() -- Back.LocalScript
 		game:GetService("RunService").Heartbeat:Connect(updateFly)
 	end)
 end
-coroutine.wrap(RIAWBDN_fake_script)()
-local function HCJJNRJ_fake_script() -- Paintball.LocalScript 
+coroutine.wrap(VHVKRGY_fake_script)()
+local function VBTKAR_fake_script() -- Paintball.LocalScript 
 	local script = Instance.new('LocalScript', Paintball)
 
 	local uis = game:GetService("UserInputService")
@@ -537,4 +543,4 @@ local function HCJJNRJ_fake_script() -- Paintball.LocalScript
 		end
 	end)
 end
-coroutine.wrap(HCJJNRJ_fake_script)()
+coroutine.wrap(VBTKAR_fake_script)()
